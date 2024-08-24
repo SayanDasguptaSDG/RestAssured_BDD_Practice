@@ -9,6 +9,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+import resources.Resources;
 import resources.TestdataBuild;
 import resources.Utils;
 
@@ -23,6 +24,7 @@ public class StepDefinition extends Utils {
     Response response;
     JsonPath js;
     TestdataBuild testdataBuild = new TestdataBuild();
+    Resources resources;
 
     /* To be used when Scenario is used, for Scenario Outline, need not be used
     @Given("Add place payload")
@@ -37,18 +39,27 @@ public class StepDefinition extends Utils {
                 .body(testdataBuild.addPlacePayload(name, language, address));
     }
 
-    @When("user calls {string} with POST HTTP request")
-    public void user_calls_with_post_http_request(String resource) {
+    @When("user calls {string} with {string} HTTP request")
+    public void user_calls_with_http_request(String resource, String httpMethod) {
+        resources = Resources.valueOf(resource);
         responseSpec = new ResponseSpecBuilder()
                 .expectStatusCode(200)
                 .expectContentType(ContentType.JSON)
                 .build();
-        response = requestSpec.when().post("/maps/api/place/add/json")
-                .then().assertThat().spec(responseSpec).extract().response();
+
+        if(httpMethod.equalsIgnoreCase("POST")) {
+            response = requestSpec.when().post(resources.getResource());
+        } else if(httpMethod.equalsIgnoreCase("GET")) {
+            response = requestSpec.when().get(resources.getResource());
+        } else if(httpMethod.equalsIgnoreCase("DELETE")) {
+            response = requestSpec.when().delete(resources.getResource());
+        }
     }
     @Then("the API call is successful with status code {int}")
     public void the_api_call_is_successful_with_status_code(Integer statusCode) {
-        assertEquals((Integer)response.getStatusCode(), (Integer)200);
+        response = response.then().assertThat()
+                .spec(responseSpec).extract().response();
+        assertEquals((Integer)response.getStatusCode(), statusCode);
     }
     @Then("{string} in response body is {string}")
     public void in_response_body_is(String actualResult, String expectedResult) {
