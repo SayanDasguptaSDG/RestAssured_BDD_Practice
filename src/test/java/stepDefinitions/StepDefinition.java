@@ -24,14 +24,21 @@ public class StepDefinition extends Utils {
     JsonPath js;
     TestdataBuild testdataBuild = new TestdataBuild();
 
+    /* To be used when Scenario is used, for Scenario Outline, need not be used
     @Given("Add place payload")
     public void add_place_payload() throws IOException {
         requestSpec = given().log().all().spec(requestSpecification())
                         .body(testdataBuild.addPlacePayload());
+    }*/
+
+    @Given("Add place payload with {string} {string} {string}")
+    public void addPlacePayloadWith(String name, String language, String address) throws IOException {
+        requestSpec = given().log().all().spec(requestSpecification())
+                .body(testdataBuild.addPlacePayload(name, language, address));
     }
 
     @When("user calls {string} with POST HTTP request")
-    public void user_calls_with_post_http_request(String path) {
+    public void user_calls_with_post_http_request() {
         responseSpec = new ResponseSpecBuilder()
                 .expectStatusCode(200)
                 .expectContentType(ContentType.JSON)
@@ -40,7 +47,7 @@ public class StepDefinition extends Utils {
                 .then().assertThat().spec(responseSpec).extract().response();
     }
     @Then("the API call is successful with status code {int}")
-    public void the_api_call_is_successful_with_status_code(Integer expectedResult) {
+    public void the_api_call_is_successful_with_status_code() {
         assertEquals((Integer)response.getStatusCode(), (Integer)200);
     }
     @Then("{string} in response body is {string}")
@@ -49,5 +56,4 @@ public class StepDefinition extends Utils {
         js = new JsonPath(responseStr);
         assertEquals(js.get(actualResult).toString(), expectedResult);;
     }
-
 }

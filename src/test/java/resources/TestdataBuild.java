@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestdataBuild {
-    public AddPlace addPlacePayload() {
+    public AddPlace addPlacePayload(String name, String language, String address) {
         AddPlace place = new AddPlace();
 
         List<String> types = new ArrayList<>();
@@ -19,11 +19,11 @@ public class TestdataBuild {
         location.setLng(33.427362);
 
         place.setAccuracy(50);
-        place.setAddress("29, side layout, cohen 09");
-        place.setLanguage("French-IN");
+        place.setAddress(address);
+        place.setLanguage(language);
         place.setPhone_number("(+91) 983 893 3937");
         place.setWebsite("www.google.com");
-        place.setName("House of Death");
+        place.setName(name);
         place.setTypes(types);
         place.setLocation(location);
         return place;
