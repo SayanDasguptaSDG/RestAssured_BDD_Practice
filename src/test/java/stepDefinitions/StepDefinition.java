@@ -12,7 +12,7 @@ import io.restassured.specification.ResponseSpecification;
 import resources.TestdataBuild;
 import resources.Utils;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
@@ -25,7 +25,7 @@ public class StepDefinition extends Utils {
     TestdataBuild testdataBuild = new TestdataBuild();
 
     @Given("Add place payload")
-    public void add_place_payload() throws FileNotFoundException {
+    public void add_place_payload() throws IOException {
         requestSpec = given().log().all().spec(requestSpecification())
                         .body(testdataBuild.addPlacePayload());
     }
