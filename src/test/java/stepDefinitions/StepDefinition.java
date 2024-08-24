@@ -38,7 +38,7 @@ public class StepDefinition extends Utils {
     }
 
     @When("user calls {string} with POST HTTP request")
-    public void user_calls_with_post_http_request() {
+    public void user_calls_with_post_http_request(String resource) {
         responseSpec = new ResponseSpecBuilder()
                 .expectStatusCode(200)
                 .expectContentType(ContentType.JSON)
@@ -47,7 +47,7 @@ public class StepDefinition extends Utils {
                 .then().assertThat().spec(responseSpec).extract().response();
     }
     @Then("the API call is successful with status code {int}")
-    public void the_api_call_is_successful_with_status_code() {
+    public void the_api_call_is_successful_with_status_code(Integer statusCode) {
         assertEquals((Integer)response.getStatusCode(), (Integer)200);
     }
     @Then("{string} in response body is {string}")

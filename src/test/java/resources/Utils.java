@@ -12,16 +12,20 @@ import java.util.Properties;
 public class Utils {
     String[] credentials = {"key", "qaclick123"};
     PrintStream log;
+    public static RequestSpecification request;
 
     public RequestSpecification requestSpecification() throws IOException {
-        log = new PrintStream(new FileOutputStream("logging.log"));
-        return new RequestSpecBuilder()
-                .setBaseUri(getGlobalValue("baseUri"))
-                .addQueryParam(credentials[0], credentials[1])
-                .addFilter(RequestLoggingFilter.logRequestTo(log))
-                .addFilter(ResponseLoggingFilter.logResponseTo(log))
-                .setContentType(ContentType.JSON)
-                .build();
+        if(request == null) {
+            log = new PrintStream(new FileOutputStream("logging.log"));
+            request = new RequestSpecBuilder()
+                    .setBaseUri(getGlobalValue("baseUri"))
+                    .addQueryParam(credentials[0], credentials[1])
+                    .addFilter(RequestLoggingFilter.logRequestTo(log))
+                    .addFilter(ResponseLoggingFilter.logResponseTo(log))
+                    .setContentType(ContentType.JSON)
+                    .build();
+        }
+        return request;
     }
 
     public static String getGlobalValue(String key) throws IOException {
