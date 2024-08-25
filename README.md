@@ -1,4 +1,4 @@
-RestAssured practice with Behavior Driver Developement (BDD) Framework
+RestAssured practice with Behavior Driver Development (BDD) Framework
 
 To execute with maven:
 
