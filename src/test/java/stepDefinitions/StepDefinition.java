@@ -15,7 +15,6 @@ import resources.Utils;
 
 import java.io.IOException;
 
-import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 
@@ -25,6 +24,7 @@ public class StepDefinition extends Utils {
     Response response;
     TestdataBuild testdataBuild = new TestdataBuild();
     Resources resources;
+    static String place_id;
 
     /* To be used when Scenario is used, for Scenario Outline, need not be used
     @Given("Add place payload")
@@ -36,7 +36,7 @@ public class StepDefinition extends Utils {
     @Given("Add place payload with {string} {string} {string}")
     public void addPlacePayloadWith(String name, String language, String address) throws IOException {
         requestSpec = given().log().all().spec(requestSpecification())
-                .body(testdataBuild.addPlacePayload(name, language, address));
+                .body(testdataBuild.generateAddPlacePayload(name, language, address));
     }
 
     @When("user calls {string} with {string} HTTP request")
@@ -51,8 +51,6 @@ public class StepDefinition extends Utils {
             response = requestSpec.when().post(resources.getResource());
         } else if(httpMethod.equalsIgnoreCase("GET")) {
             response = requestSpec.when().get(resources.getResource());
-        } else if(httpMethod.equalsIgnoreCase("DELETE")) {
-            response = requestSpec.when().delete(resources.getResource());
         }
     }
     @Then("the API call is successful with status code {int}")
@@ -68,10 +66,16 @@ public class StepDefinition extends Utils {
 
     @And("verify place_id created maps to {string} using {string}")
     public void verifyPlace_idCreatedMapsToUsing(String expectedName, String resource) throws IOException {
-        String place_id = getJsonPath(response, "place_id");
+        place_id = getJsonPath(response, "place_id");
         requestSpec = given().log().all().spec(requestSpecification())
                 .queryParam("place_id", place_id);
         user_calls_with_http_request(resource, "GET");
         assertEquals(getJsonPath(response, "name"), expectedName);
+    }
+
+    @Given("Delete Place payload")
+    public void deletePlacePayload() throws IOException {
+        requestSpec = given().log().all().spec(requestSpecification())
+                .body(testdataBuild.generateDeletePlacePayload(place_id));
     }
 }
