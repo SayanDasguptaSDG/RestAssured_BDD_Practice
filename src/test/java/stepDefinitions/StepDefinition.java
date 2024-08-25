@@ -1,11 +1,11 @@
 package stepDefinitions;
 
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
@@ -15,6 +15,7 @@ import resources.Utils;
 
 import java.io.IOException;
 
+import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 
@@ -22,7 +23,6 @@ public class StepDefinition extends Utils {
     RequestSpecification requestSpec;
     ResponseSpecification responseSpec;
     Response response;
-    JsonPath js;
     TestdataBuild testdataBuild = new TestdataBuild();
     Resources resources;
 
@@ -63,8 +63,15 @@ public class StepDefinition extends Utils {
     }
     @Then("{string} in response body is {string}")
     public void in_response_body_is(String actualResult, String expectedResult) {
-        String responseStr = response.asString();
-        js = new JsonPath(responseStr);
-        assertEquals(js.get(actualResult).toString(), expectedResult);;
+        assertEquals(getJsonPath(response, actualResult), expectedResult);;
+    }
+
+    @And("verify place_id created maps to {string} using {string}")
+    public void verifyPlace_idCreatedMapsToUsing(String expectedName, String resource) throws IOException {
+        String place_id = getJsonPath(response, "place_id");
+        requestSpec = given().log().all().spec(requestSpecification())
+                .queryParam("place_id", place_id);
+        user_calls_with_http_request(resource, "GET");
+        assertEquals(getJsonPath(response, "name"), expectedName);
     }
 }
